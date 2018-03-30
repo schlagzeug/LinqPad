@@ -1,31 +1,27 @@
-<Query Kind="Program" />
+<Query Kind="Statements" />
 
-void Main()
+/// Script that takes a path and outputs a file that contains all the MD5
+/// hash values for each file in the provided directory
+
+var path = @"C:\Work\Cases\02452430";
+
+
+MyUtil.ShowStarted();
+
+var rand = new Random();
+var resultFileName = string.Format("Results_{0}_{1}.txt", DateTime.Now.ToString("yyyyMMdd"), rand.Next());
+var resultFile = Path.Combine(path, resultFileName);
+
+var di = new DirectoryInfo(path);
+var files = di.GetFiles();
+
+using (var writer = new StreamWriter(resultFile))
 {
-	CreateMD5List(@"C:\Work\Cases\02452430");
-}
-
-static void CreateMD5List(string path)
-{
-	MyExtensions.ShowStarted();
-	
-	var rand = new Random();
-    var resultFileName = string.Format("Results_{0}_{1}.txt", DateTime.Now.ToString("yyyyMMdd"), rand.Next());
-    var resultFile = Path.Combine(path, resultFileName);
-
-    var di = new DirectoryInfo(path);
-	var files = di.GetFiles();
-
-	var writer = new StreamWriter(resultFile);
-
 	writer.WriteLine("FILE NAME | MD5 HASH".Dump());
 	foreach (var file in files)
-    {
-		writer.WriteLine(string.Format("{0} | {1}", file.Name, MyExtensions.CalculateMD5Hash(file.FullName)).Dump());
-    }
-
-    writer.Flush();
-    writer.Close();
-	MyExtensions.OpenFileInNotepad(resultFile);
-	MyExtensions.ShowFinished();
+	{
+		writer.WriteLine(string.Format("{0} | {1}", file.Name, MyUtil.CalculateMD5Hash(file.FullName)).Dump());
+	}
 }
+MyUtil.OpenFileInNotepad(resultFile);
+MyUtil.ShowFinished();

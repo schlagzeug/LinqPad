@@ -2,9 +2,9 @@
 
 void Main()
 {
-	MyExtensions.ShowStarted();
+	MyUtil.ShowStarted();
 	FileMover.MoveFiles();
-	MyExtensions.ShowFinished();
+	MyUtil.ShowFinished();
 }
 
 // Define other methods and classes here
@@ -13,8 +13,7 @@ public static class FileMover
 	private static readonly string FromDirectory = @"C:\Work\Cases\02437120\Errors\TRUE_ERRORS";
 	private static readonly string ToDirectory = @"C:\Work\Cases\02437120\Errors\TRUE_ERRORS\new";
 
-	private static readonly List<string> FileList = MyExtensions.GetFileList(@"C:\Work\Cases\02437120\Errors\TrueErrors.txt");
-
+	
 	public static void MoveFiles()
 	{
 		var di = new DirectoryInfo(FromDirectory);
@@ -36,9 +35,7 @@ public static class FileMover
 	// ============================================================
 	private static bool HasMultiISA(FileInfo file)
 	{
-		var reader = new StreamReader(file.FullName);
-		var contents = reader.ReadToEnd();
-		reader.Close();
+		var contents = File.ReadAllText(file.FullName);
 		if (contents.Contains(@"ISA$") && contents.Contains(@"ISA*"))
 		{
 			return true;
@@ -47,12 +44,14 @@ public static class FileMover
 		return false;
 	}
 	// ============================================================
-	private static bool MatchFileName(FileInfo file, string matchString)
+	private static string MatchString = "837i";
+	private static bool MatchFileName(FileInfo file)
 	{
-		if (file.Name.Contains(matchString)) return true;
+		if (file.Name.Contains(MatchString)) return true;
 		return false;
 	}
 	// ============================================================
+	private static readonly List<string> FileList = MyUtil.GetListFromFile(@"C:\Work\Cases\02437120\Errors\TrueErrors.txt");
 	private static bool IsInList(FileInfo file)
 	{
 		if (FileList.Contains(file.Name)) return true;

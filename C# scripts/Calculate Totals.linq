@@ -15,7 +15,7 @@ public static class Flag
 	//     38 - HF xmitlog files
 	//      3 - DT xmitlog files
 	//      2 - PA xmitlog files
-	public static readonly int Index = 38;
+	public static readonly int Index = 0;
 	public static readonly char Delimiter = '|';
 
 	// PRINT IMAGE FILE FLAGS

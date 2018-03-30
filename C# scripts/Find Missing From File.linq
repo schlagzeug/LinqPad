@@ -7,7 +7,7 @@
 var fullListFile = @"C:\Work\Cases\02074020\missing_SortedUnique.txt";
 var excludeListFile = @"C:\Work\Cases\02074020\inXmitlog_SortedUnique.txt";
 
-
+MyUtil.ShowStarted();
 var resultFile = Path.Combine(Path.GetDirectoryName(fullListFile), "Results.txt");
 var fullList = MyUtil.ReadFileToList(fullListFile);
 var excludeList = MyUtil.ReadFileToList(excludeListFile);
@@ -22,3 +22,4 @@ using (var writer = new StreamWriter(resultFile))
 	}
 }
 MyUtil.OpenFileInNotepad(resultFile);
+MyUtil.ShowFinished();
