@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MyExtensions.FW46</name>
+    </assembly>
+    <members>
+        <member name="M:MyExtensions.StartOfDay(System.DateTime)">
+            <summary>Returns earliest DateTime for provided DateTime</summary>
+        </member>
+        <member name="M:MyExtensions.EndOfDay(System.DateTime)">
+            <summary>Returns latest DateTime for provided DateTime</summary>
+        </member>
+        <member name="M:MyExtensions.FlushAndClose(System.IO.StreamWriter)">
+            <summary>Calls Flush() and Close()</summary>
+        </member>
+        <member name="M:MyExtensions.WriteList(System.IO.StreamWriter,System.Collections.Generic.List{System.String})">
+            <summary>Writes a List&lt;string&gt; to a file, one string per line</summary>
+        </member>
+        <member name="M:MyExtensions.ReadFileToList(System.IO.StreamReader)">
+            <summary>Read file contents into a List&lt;string&gt;, one record per line</summary>
+        </member>
+        <member name="M:MyUtil.ShowStarted">
+            <summary>Displays 'Started' message for Linqpad</summary>
+        </member>
+        <member name="M:MyUtil.ShowFinished">
+            <summary>Displays 'Finished' message for Linqpad</summary>
+        </member>
+        <member name="M:MyUtil.GetResultsFile(System.String)">
+            <summary>Returns a path to a new "results" file based on the provided file</summary>
+        </member>
+        <member name="M:MyUtil.GetOuputFileBasedOnInputFile(System.String,System.String)">
+            <summary>Returns a path to a new file based on the provided file. (name.txt --> name_nameExt.txt)</summary>
+        </member>
+        <member name="M:MyUtil.OpenFileDialog(System.String@)">
+            <summary>Opens a generic OpenFileDialog window</summary>
+        </member>
+        <member name="M:MyUtil.OpenFileDialog(System.String,System.String,System.String,System.String,System.String@)">
+            <summary>Opens an OpenFileDialog window</summary>
+        </member>
+        <member name="M:MyUtil.OpenDirectory(System.String)">
+            <summary>Opens a directory in Windows Explorer</summary>
+        </member>
+        <member name="M:MyUtil.OpenFile(System.String)">
+            <summary>Opens a file</summary>
+        </member>
+        <member name="M:MyUtil.OpenFile(System.String,System.Boolean)">
+            <summary>Opens a file in Notepad++, with option to open as read only</summary>
+        </member>
+        <member name="M:MyUtil.OpenFileInNotepad(System.String)">
+            <summary>Open a file in Notepad++</summary>
+        </member>
+        <member name="M:MyUtil.OpenWebPage(System.String,System.Boolean)">
+            <summary>Open a webpage, in Internet Explorer or default browser</summary>
+        </member>
+        <member name="M:MyUtil.ShowError(System.String)">
+            <summary>Show Error in System.Windows.MessageBox</summary>
+        </member>
+        <member name="M:MyUtil.ShowMessage(System.String)">
+            <summary>Show Message in System.Windows.MessageBox</summary>
+        </member>
+        <member name="M:MyUtil.ShowMessage(System.String,System.String)">
+            <summary>Show Message in System.Windows.MessageBox with provided title</summary>
+        </member>
+        <member name="M:MyUtil.CopyFiles(System.String,System.String)">
+            <summary>Copies files from one directory to another replacing files if file is newer and different</summary>
+        </member>
+        <member name="M:MyUtil.CalculateMD5Hash(System.String)">
+            <summary>Returns MD5 hash of provided file (input)</summary>
+        </member>
+        <member name="M:MyUtil.CompareMultiple(System.String,System.String[])">
+            <summary>Returns true if all values match</summary>
+        </member>
+        <member name="M:MyUtil.GetListFromFile(System.String)">
+            <summary>Returns a List&lt;string&gt; of lines in a file</summary>
+        </member>
+        <member name="M:MyUtil.StartOfDay(System.DateTime)">
+            <summary>Returns earliest DateTime for provided DateTime</summary>
+        </member>
+        <member name="M:MyUtil.EndOfDay(System.DateTime)">
+            <summary>Returns latest DateTime for provided DateTime</summary>
+        </member>
+        <member name="M:MyUtil.WriteListToFile(System.String,System.Collections.Generic.List{System.String})">
+            <summary>Writes a List&lt;string&gt; to a file</summary>
+        </member>
+        <member name="M:MyUtil.GetCharacterSeparatorFromANSI(System.String)">
+            <summary>Reads the 4th character of the file, which should be the separator (ISA*)</summary>
+        </member>
+        <member name="M:MyUtil.ReadFileToList(System.String)">
+            <summary>Returns a list of strings from the provided file</summary>
+        </member>
+        <member name="M:MyUtil.DeleteFilesInDirectory(System.String)">
+            <summary>Deletes all files is provided directory</summary>
+        </member>
+        <member name="M:MyUtil.DeleteFilesInDirectory(System.String,System.Collections.Generic.List{System.String})">
+            <summary>Deletes all files in provided directory that are in the provided list</summary>
+        </member>
+        <member name="M:MyUtil.DeleteListOfFiles(System.Collections.Generic.List{System.String})">
+            <summary>Deletes all files in the provided list</summary>
+        </member>
+        <member name="M:MyUtil.CreateTempCopy(System.String)">
+            <summary>Creates a temp file that is a copy of the provided file</summary>
+        </member>
+        <member name="M:MyUtil.MoveToSubFolder(System.String,System.String)">
+            <summary>Moves a file to a sub folder. Deletes the file if it already exists</summary>
+        </member>
+        <member name="M:MyUtil.DeleteDirectory(System.String)">
+            <summary>Deletes a directory and all files in it</summary>
+        </member>
+        <member name="M:MyUtil.Function_name">
+            <summary></summary>
+        </member>
+    </members>
+</doc>
