@@ -1,22 +1,28 @@
 <Query Kind="Statements" />
 
-var listLocation = @"C:\Work\Cases\02169249\List.txt"; // list should be in format of CURRENTNAME,NEWNAME one record per line.
+/// Provided a list in the format of 'CURRENTNAME,NEWNAME' one record per line, renames all listed files 
+/// in the provided directory
+
+MyUtil.ShowStarted();
+var listLocation = @"C:\Work\Cases\02169249\List.txt";
 var directory = @"C:\Work\Cases\02169249";
 var renameList = new Dictionary<string, string>();
 
-using (StreamReader sr = File.OpenText(listLocation))
+using (var reader = File.OpenText(listLocation))
 {
-    while (!sr.EndOfStream)
+    while (!reader.EndOfStream)
     {
-        var pair = sr.ReadLine().Split(',');
+        var pair = reader.ReadLine().Split(',');
         renameList.Add(pair[0], pair[1]);
     }
 }
 
-foreach (var pair in renameList)
+foreach (var pair in renameList.Dump())
 {
     if (File.Exists(Path.Combine(directory, pair.Key)))
     {
         File.Move(Path.Combine(directory, pair.Key), Path.Combine(directory, pair.Value));
     }
 }
+
+MyUtil.ShowFinished();

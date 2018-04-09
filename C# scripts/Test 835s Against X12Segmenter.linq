@@ -8,8 +8,8 @@
 /// to a "Bad" subfolder. It will leave a results file in the provided
 /// folder.
 
-private string RunFolder = @"C:\Work\Cases\02440696\Restage\835";
-private int FacID = 2164;
+private string RunFolder = @"C:\Work\Cases\02559103\835s";
+private int FacID = 1728;
 
 
 public List<string> Files { get; set; }

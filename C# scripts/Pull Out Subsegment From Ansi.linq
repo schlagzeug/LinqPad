@@ -1,39 +1,25 @@
-<Query Kind="Program" />
+<Query Kind="Statements" />
 
-void Main()
+/// Script to pull a list of subsegments from an ANSI 837/835 file
+
+var file = string.Empty;
+if (MyUtil.OpenFileDialog(out file) == true)
 {
-	var file = string.Empty;
-	if (MyExtensions.OpenFileDialog(out file) == true)
-	{
-		GenerateResult(file);
-	}
-}
-
-// Define other methods and classes here
-
-public void GenerateResult(string inFile)
-{
-	MyExtensions.ShowStarted();
+	MyUtil.ShowStarted();
 	
-	var reader = new StreamReader(inFile);
-	var outFile = MyExtensions.GetOuputFileBasedOnInputFile(inFile, "Claims");
-	var writer = new StreamWriter(outFile);
-
-	var line = string.Empty;
-	while ((line = reader.ReadLine()) != null)
+	var inFileList = MyUtil.ReadFileToList(file);
+	var outFileList = new List<string>();
+	foreach (var element in inFileList)
 	{
-		var elements = line.Split('*').ToList();
+		var elements = element.Split('*').ToList();
 		if (elements[0] == "CLM" && elements.Count > 5)
 		{
-			writer.WriteLine(elements[1].Dump());
+			outFileList.Add(elements[1].Dump());
 		}
 	}
 
-	reader.Close();
-	writer.Flush();
-	writer.Close();
-	
-	MyExtensions.OpenFile(outFile);
-	
-	MyExtensions.ShowFinished();
+	var outFile = MyUtil.GetOuputFileBasedOnInputFile(file, "Claims");
+	MyUtil.WriteListToFile(outFile, outFileList);
+	MyUtil.OpenFile(outFile);
+	MyUtil.ShowFinished();
 }

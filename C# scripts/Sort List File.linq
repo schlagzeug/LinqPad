@@ -1,5 +1,8 @@
 <Query Kind="Statements" />
 
+/// Takes a file and sorts the lines, creating two output files, one with all original entries in it, and 
+/// one with only unique entries
+
 var file = string.Empty;
 if (MyUtil.OpenFileDialog(out file) == true)
 {
