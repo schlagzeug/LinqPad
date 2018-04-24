@@ -9,18 +9,25 @@
 
 public static class Flag
 {
+	// The script can automatically determine a few file types
+	// update these fields if you need to manually set one or if 
+	// autodetect fails
+	
+	public static bool AutoDetectType = true;
+	public static IncomingFileType FileType = IncomingFileType.Unspecified;
+	
 	// DELIMITED FILE FLAGS
 	//   Index list:
 	//     32 - UB xmitlog files
 	//     38 - HF xmitlog files
 	//      3 - DT xmitlog files
 	//      2 - PA xmitlog files
-	public static readonly int Index = 0;
-	public static readonly char Delimiter = '|';
+	public static int Index = 32;
+	public static char Delimiter = '|';
 
 	// PRINT IMAGE FILE FLAGS
-	public static readonly int ChargeLineStart = 18;
-	public static readonly int MaxChargeLines = 22;
+	public static int ChargeLineStart = 18;
+	public static int MaxChargeLines = 22;
 }
 /**********************************************************/
 void Main()
@@ -38,7 +45,8 @@ public static class TotalsFileCreator
 {
 	public static void CreateTotalsFile(string sourceFile)
 	{
-		var type = CheckFile(sourceFile);
+		var type = Flag.FileType;
+		if (Flag.AutoDetectType) type = CheckFile(sourceFile);
 		type.Dump("Selected Type:");
 		
 		switch (type)
@@ -52,6 +60,10 @@ public static class TotalsFileCreator
 			case IncomingFileType.PrintImage:
 				CreateTotalsFile_PrintImage(sourceFile);
 				break;
+			case IncomingFileType.Xmit:
+				var xmitFile = new XmitFile(sourceFile);
+				xmitFile.WriteOutputFile();
+				break;
 			case IncomingFileType.Unspecified:
 			default:
 				"File Type can't be determined".Dump();
@@ -63,9 +75,22 @@ public static class TotalsFileCreator
 		using (var reader = new StreamReader(sourceFile))
 		{
 			var firstLine = reader.ReadLine();
-			if (firstLine.ToUpper().StartsWith("ISA")) return IncomingFileType.Ansi837;
-			else if (firstLine.ToUpper().Contains(Flag.Delimiter)) return IncomingFileType.Delimited;
-			else return IncomingFileType.PrintImage;
+			if (firstLine.ToUpper().StartsWith("ISA"))
+			{
+				return IncomingFileType.Ansi837;
+			}
+			else if (firstLine.ToUpper().StartsWith("XMIT"))
+			{
+				return IncomingFileType.Xmit;
+			}
+			else if (firstLine.ToUpper().Contains(Flag.Delimiter))
+			{
+				return IncomingFileType.Delimited;
+			}
+			else
+			{
+				return IncomingFileType.PrintImage;
+			}
 		}
 	}
 	private static void CreateTotalsFile_Ansi837(string sourceFile)
@@ -126,6 +151,7 @@ public enum IncomingFileType
 {
 	Ansi837,
 	Delimited,
+	Xmit,
 	PrintImage,
 	Unspecified
 }
@@ -265,11 +291,10 @@ public class Ansi837File
 	}
 	public override string ToString()
 	{
-		var retVal = $"For File {Path.GetFileName(SourceFile)}:\r\n" +
-					 $"\tCLM segment Count - {Claims.Count}\r\n" +
-					 $"\tCLM segment Total - {ClaimLineTotal.ToString("n2")}\r\n" +
-					 $"\tSV segment Total - {SvcLineTotal.ToString("n2")}";
-		return retVal;
+		return $"For File {Path.GetFileName(SourceFile)}:\r\n" +
+			   $"\tCLM segment Count - {Claims.Count}\r\n" +
+			   $"\tCLM segment Total - {ClaimLineTotal.ToString("n2")}\r\n" +
+			   $"\tSV segment Total - {SvcLineTotal.ToString("n2")}";
 	}
 }
 public class PrintImageFile
@@ -344,5 +369,157 @@ public class PrintImageFile
 					 $"\tClaim Amount Total - {ClaimLineTotal.ToString("n2")}\r\n" +
 					 $"\tLine Item Total - {SvcLineTotal.ToString("n2")}";
 		return retVal;
+	}
+}
+public class XmitRecord
+{
+	public string Account { get; set; }
+	public decimal Amount { get; set; }
+	public XmitRecord(string line, int accountIndex, int amountIndex)
+	{
+		var x = line.Split('|');
+		var d = 0m;
+		Amount = decimal.TryParse(x[amountIndex], out d) ? d : 0m;
+		Account = x[accountIndex];
+	}
+}
+public class XmitFile
+{
+	public string SourceFile {get;set;}
+	public List<XmitRecord> Records {get;set;}
+	public decimal Total {get;set;}
+	
+	public XmitFile(string sourceFile)
+	{
+		Records = new List<XmitRecord>();
+		SourceFile = sourceFile;
+		var contents = MyUtil.GetListFromFile(sourceFile);
+		var firstLine = contents[0];
+		if (firstLine.ToUpper().StartsWith("XMITCHG"))
+		{
+			// DT
+			var headerFound = false;
+			var accountIndex = 0;
+			var amountIndex = 0;
+			foreach (var line in contents)
+			{
+				if (line.StartsWith("XMITCHG"))
+				{
+					if (!headerFound)
+					{
+						var headers = line.Split('|');
+						for (int i = 0; i < headers.Count(); i++)
+						{
+							if (headers[i] == "PATNUM")
+							{
+								accountIndex = i;
+								headerFound = true;
+							}
+							else if (headers[i] == "CDMCHARGE")
+							{
+								amountIndex = i;
+								headerFound = true;
+							}
+						}
+					}
+					else
+					{
+						var newRecord = new XmitRecord(line, accountIndex, amountIndex);
+						Records.Add(newRecord);
+						Total += newRecord.Amount;
+					}
+				}
+			}
+		}
+		else if (firstLine.ToUpper().StartsWith("XMITTXN"))
+		{
+			// PA
+			var headerFound = false;
+			var accountIndex = 0;
+			var amountIndex = 0;
+			foreach (var line in contents)
+			{
+				if (line.StartsWith("XMITTXN"))
+				{
+					if (!headerFound)
+					{
+						var headers = line.Split('|');
+						for (int i = 0; i < headers.Count(); i++)
+						{
+							if (headers[i] == "PATNUM")
+							{
+								accountIndex = i;
+								headerFound = true;
+							}
+							else if (headers[i] == "AMOUNT")
+							{
+								amountIndex = i;
+								headerFound = true;
+							}
+						}
+					}
+					else
+					{
+						var newRecord = new XmitRecord(line, accountIndex, amountIndex);
+						Records.Add(newRecord);
+						Total += newRecord.Amount;
+					}
+				}
+			}
+		}
+		else
+		{
+			// Claim file
+			var headerFound = false;
+			var accountIndex = 0;
+			var amountIndex = 0;
+			foreach (var line in contents)
+			{
+				if (line.StartsWith("XMITMAST"))
+				{
+					if (!headerFound)
+					{
+						var headers = line.Split('|');
+						for (int i = 0; i < headers.Count(); i++)
+						{
+							if (headers[i] == "PATNUM")
+							{
+								accountIndex = i;
+								headerFound = true;
+							}
+							else if (headers[i] == "GROSSCHGS")
+							{
+								amountIndex = i;
+								headerFound = true;
+							}
+						}
+					}
+					else
+					{
+						var newRecord = new XmitRecord(line, accountIndex, amountIndex);
+						Records.Add(newRecord);
+						Total += newRecord.Amount;
+					}
+				}
+			}
+		}
+	}
+	public override string ToString()
+	{
+		var retValue = string.Empty;
+		foreach (var record in Records)
+		{
+			retValue += $"{record.Account} -- {record.Amount}\r\n";
+		}
+		
+		retValue += $"Total: {Total}";
+		
+		return retValue;
+	}
+	public void WriteOutputFile()
+	{
+		var outputfile = MyUtil.GetResultsFile(SourceFile);
+		File.WriteAllText(outputfile, this.ToString());
+		MyUtil.OpenFileInNotepad(outputfile);
 	}
 }

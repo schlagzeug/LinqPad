@@ -4,9 +4,9 @@
 /// and the expected count of delimiters in the file, and 
 /// the script will tell you which lines don't have that count
 
-var filePath = @"C:\Work\Cases\02557512\ins201804042018040404000000.dat";
+var filePath = @"C:\Work\Cases\02566721\Backlog\MMCNTHRIVECHARGEDETAIL_20180401_003600.txt";
 var delimiter = '|';
-var expectedCount = 144;
+var expectedCount = 16;
 
 
 MyUtil.ShowStarted();
